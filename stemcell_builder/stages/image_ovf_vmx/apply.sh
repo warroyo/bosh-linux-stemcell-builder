@@ -44,6 +44,7 @@ vm_arch=amd64
 vm_guestos=ubuntu-64
 
 cat > $ovf/$vm_hostname.vmx <<EOS
+firmware = "efi"
 config.version = "8"
 virtualHW.version = 9
 floppy0.present = "FALSE"
