@@ -19,7 +19,7 @@ else
 fi
 
 dd if=/dev/null of=${disk_image} bs=1M seek=${image_create_disk_size} 2> /dev/null
-parted --script ${disk_image} mklabel msdos
+parted --script ${disk_image} mklabel gpt
 if is_ppc64le; then
   parted --script ${disk_image} mkpart primary $part_offset $part_size
   parted --script ${disk_image} set 1 boot on
