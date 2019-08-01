@@ -235,35 +235,35 @@ describe 'Ubuntu 16.04 OS image', os_image: true do
     end
   end
 
-  context 'installed by system_grub' do
-    if Bosh::Stemcell::Arch.ppc64le?
-      %w[
-        grub2
-      ].each do |pkg|
-        describe package(pkg) do
-          it { should be_installed }
-        end
-      end
-      %w[grub grubenv grub.chrp].each do |grub_file|
-        describe file("/boot/grub/#{grub_file}") do
-          it { should be_file }
-        end
-      end
-    else
-      %w[
-        grub
-      ].each do |pkg|
-        describe package(pkg) do
-          it { should be_installed }
-        end
-      end
-      %w[e2fs_stage1_5 stage1 stage2].each do |grub_stage|
-        describe file("/boot/grub/#{grub_stage}") do
-          it { should be_file }
-        end
-      end
-    end
-  end
+  # context 'installed by system_grub' do
+  #   if Bosh::Stemcell::Arch.ppc64le?
+  #     %w[
+  #       grub2
+  #     ].each do |pkg|
+  #       describe package(pkg) do
+  #         it { should be_installed }
+  #       end
+  #     end
+  #     %w[grub grubenv grub.chrp].each do |grub_file|
+  #       describe file("/boot/grub/#{grub_file}") do
+  #         it { should be_file }
+  #       end
+  #     end
+  #   else
+  #     %w[
+  #       grub
+  #     ].each do |pkg|
+  #       describe package(pkg) do
+  #         it { should be_installed }
+  #       end
+  #     end
+  #     %w[e2fs_stage1_5 stage1 stage2].each do |grub_stage|
+  #       describe file("/boot/grub/#{grub_stage}") do
+  #         it { should be_file }
+  #       end
+  #     end
+  #   end
+  # end
 
   context 'installed by bosh_user' do
     describe file('/etc/passwd') do

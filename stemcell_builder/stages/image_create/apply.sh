@@ -15,7 +15,8 @@ if is_ppc64le; then
 else
   # Reserve the first 63 sectors for grub
   part_offset=63s
-  part_size=$((${image_create_disk_size} - 1))
+  #reserve 200mib for esp boot
+  part_size=$((${image_create_disk_size} - 201))
 fi
 
 dd if=/dev/null of=${disk_image} bs=1M seek=${image_create_disk_size} 2> /dev/null
@@ -27,6 +28,8 @@ if is_ppc64le; then
   parted --script ${disk_image} mkpart primary ext4 $part_size 100%
 else
   parted --script ${disk_image} mkpart primary ext2 $part_offset $part_size
+  parted --script ${disk_image} mkpart ESP fat32 $part_size 100% 
+  parted --script ${disk_image} set 2 boot on
 fi
 
 
@@ -41,8 +44,10 @@ if is_ppc64le; then
   device_partition=$(kpartx -sav ${device} | grep "^add" | grep "p2 " | grep -v "p1" | cut -d" "
   -f3)
 else
-  device_partition=$(kpartx -sav ${device} | grep "^add" | cut -d" " -f3)
+  device_partition=$(kpartx -sav ${device} | grep "^add" | grep "p1 " | grep -v "p2" | cut -d" " -f3)
+  esp_partition=$(kpartx -sav ${device} | grep "^add" | grep "p2 " | grep -v "p1" | cut -d" " -f3)
 fi
+kpartx -sav ${device}
 add_on_exit "kpartx -dv ${device}"
 
 loopback_dev="/dev/mapper/${device_partition}"
@@ -55,6 +60,12 @@ image_mount_point=${work}/mnt
 mkdir -p ${image_mount_point}
 mount ${loopback_dev} ${image_mount_point}
 add_on_exit "umount ${image_mount_point}"
+
+#mount ESP
+if ! is_ppc64le; then
+loopback_esp_dev="/dev/mapper/${esp_partition}"
+mkfs.vfat ${loopback_esp_dev}
+fi
 
 # Copy root
 time rsync -aHA $chroot/ ${image_mount_point}

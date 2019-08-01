@@ -10,7 +10,7 @@ if [ $(get_os_type) == "opensuse" ] ; then
   preferred=grub2
   fallback=grub
 else
-  preferred=grub
+  preferred=grub-efi
   fallback=grub2
 fi
 
