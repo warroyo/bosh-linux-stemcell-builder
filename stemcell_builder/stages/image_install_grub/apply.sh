@@ -74,8 +74,11 @@ add_on_exit "umount ${image_mount_point}/sys"
 
 # install bootsector into disk image file
 run_in_chroot ${image_mount_point} "grub-install ${device} --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=ubuntu --recheck"
-
-   
+# I could not figure out how to get EFI to recognize the ubuntu efi file so setting the fallback works
+run_in_chroot ${image_mount_point} "
+    mkdir -p /boot/efi/EFI/BOOT
+    cp -R  /boot/efi/EFI/ubuntu/grubx64.efi /boot/efi/EFI/BOOT/bootx64.efi
+"
 run_in_chroot ${image_mount_point} "sed -i 's/CLASS=\\\"--class gnu-linux --class gnu --class os\\\"/CLASS=\\\"--class gnu-linux --class gnu --class os --unrestricted\\\"/' /etc/grub.d/10_linux"
     cat >${image_mount_point}/etc/default/grub <<EOF
 GRUB_CMDLINE_LINUX="vconsole.keymap=us net.ifnames=0 biosdevname=0 crashkernel=auto selinux=0 plymouth.enable=0 console=ttyS0,115200n8 earlyprintk=ttyS0 rootdelay=300 ipv6.disable=1 audit=1 cgroup_enable=memory swapaccount=1"

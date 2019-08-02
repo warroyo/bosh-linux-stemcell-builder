@@ -13,8 +13,6 @@ if is_ppc64le; then
   part_offset=2048s
   part_size=9MiB
 else
-  # Reserve the first 63 sectors for grub
-  part_offset=63s
   #reserve 200mib for esp boot
   part_size=$((${image_create_disk_size} - 201))
 fi
@@ -27,7 +25,7 @@ if is_ppc64le; then
   parted --script ${disk_image} set 1 prep on
   parted --script ${disk_image} mkpart primary ext4 $part_size 100%
 else
-  parted --script ${disk_image} mkpart primary ext2 $part_offset $part_size
+  parted --script ${disk_image} mkpart primary ext2 1MiB $part_size
   parted --script ${disk_image} mkpart ESP fat32 $part_size 100% 
   parted --script ${disk_image} set 2 boot on
 fi
