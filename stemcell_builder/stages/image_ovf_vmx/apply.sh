@@ -46,7 +46,9 @@ vm_guestos=ubuntu-64
 cat > $ovf/$vm_hostname.vmx <<EOS
 firmware = "efi"
 config.version = "8"
-virtualHW.version = 9
+virtualHW.version = 11
+pciPassthru.use64bitMMIO = "TRUE"
+pciPassthru.64bitMMIOSizeGB = 2
 floppy0.present = "FALSE"
 nvram = "nvram"
 deploymentPlatform = "windows"
